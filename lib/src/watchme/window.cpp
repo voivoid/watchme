@@ -8,7 +8,7 @@
 
 namespace watch_me
 {
-Window::Window()
+Window::Window() : timer( 0 )
 {
   send_gui_task( [ this ]() {
     assert_this_is_gui_thread();
@@ -18,15 +18,17 @@ Window::Window()
     ImGui::StyleColorsLight();
 
     impl.reset( new WindowImpl );
-    impl->start_timer( std::chrono::milliseconds{ 1000 / 60 }, std::bind( &Window::render, this ) );
+    this->timer = impl->start_timer( std::chrono::milliseconds{ 1000 / 60 }, std::bind( &Window::render, this ) );
   } );
 }
 
 Window::~Window()
 {
   auto* pimpl = impl.release();
-  send_gui_task( [ pimpl ]() {
+  send_gui_task( [ this, pimpl ]() {
     assert_this_is_gui_thread();
+
+    pimpl->stop_timer( this->timer );
 
     delete pimpl;
     ImGui::DestroyContext();
@@ -58,12 +60,18 @@ void Window::make_frame()
 
 void Window::add_var( std::unique_ptr<Var> var )
 {
-  auto ptr = var->ptr_addr;
-  vars.emplace( ptr, std::move( var ) );
+  assert( var );
+
+  // std::function is copyable so std::unique_ptr can't be captured since it's move-only
+  post_gui_task( [ this, v = var.get() ] {
+    vars.emplace( v->ptr_addr, std::unique_ptr<Var>( v ) );
+  } );
+
+  var.release();
 }
 
 void Window::remove_var( const void* addr )
 {
-  vars.erase( addr );
+  post_gui_task( [ this, addr ] { this->vars.erase( addr ); } );
 }
 }  // namespace watch_me

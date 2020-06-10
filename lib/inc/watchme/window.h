@@ -1,6 +1,7 @@
 #pragma
 
 #include "watchme/var.h"
+#include "watchme/window_timers_map.h"
 
 #include <memory>
 #include <unordered_map>
@@ -25,5 +26,7 @@ private:
 private:
   std::unique_ptr<WindowImpl> impl;
   std::unordered_map<const void*, std::unique_ptr<Var>> vars;
+
+  WindowTimersMap::TimerHandle timer;
 };
 }  // namespace watch_me
