@@ -3,22 +3,22 @@
 #include <map>
 #include <mutex>
 
-#define WATCH_ME( var ) watch_me::watcher var##_watcher( var, #var );
-#define UPDATE_ME( var ) watch_me::watcher::update( var );
+#define WATCH_ME( var ) watch_me::Watcher var##_watcher( var, #var );
+#define UPDATE_ME( var ) watch_me::Watcher::update( var );
 
 namespace watch_me
 {
 class Window;
-class watcher
+class Watcher
 {
 
 public:
-  watcher( const int& var, const char* const var_name ) : var_ptr( &var )
+  Watcher( const int& var, const char* const var_name ) : var_ptr( &var )
   {
     add_window( var_ptr, var_name );
   }
 
-  ~watcher();
+  ~Watcher();
 
   template <typename T>
   static void update( const T& var )
