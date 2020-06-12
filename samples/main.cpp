@@ -9,7 +9,7 @@ int main()
   long long y     = 0;
   double d        = 0.0;
   std::string str = "hello";
-  int* ptr        = &x;
+  auto* ptr        = &x;
 
   WATCH_ME( x );
   WATCH_ME( y );
