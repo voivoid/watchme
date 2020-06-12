@@ -1,4 +1,6 @@
 #include "watchme/window.h"
+
+#include "watchme/var.h"
 #include "watchme/gui_thread.h"
 #include "watchme/window_impl.h"
 
