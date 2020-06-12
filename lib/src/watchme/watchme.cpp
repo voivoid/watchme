@@ -1,6 +1,7 @@
 #include "watchme/watchme.h"
 
 #include "watchme/numvar.h"
+#include "watchme/ptrvar.h"
 #include "watchme/strvar.h"
 #include "watchme/window.h"
 
@@ -29,21 +30,37 @@ void add( Window& window, const T& var, const char* const var_name )
   window.add_var( std::make_unique<watch_me::NumericVar<T>>( var_name, &var ) );
 }
 
+void add( Window& window, const void* var, const char* const var_name )
+{
+  window.add_var( std::make_unique<watch_me::PtrVar>( var_name, var ) );
+}
+
 }  // namespace
 
 template <typename T>
 Watcher::Watcher( const T& var, const char* const var_name ) : var_ptr( static_cast<const void*>( &var ) )
 {
-  create_window();
+  init( var, var_name );
+}
 
-  assert( window );
-  add( *window, var, var_name );
+Watcher::Watcher( const void* var, const char* const var_name )
+{
+  init( var, var_name );
 }
 
 Watcher::~Watcher()
 {
   assert( window );
   window->remove_var( var_ptr );
+}
+
+template <typename T>
+void Watcher::init( const T& var, const char* const var_name )
+{
+  create_window();
+
+  assert( window );
+  add( *window, var, var_name );
 }
 
 void Watcher::create_window()
