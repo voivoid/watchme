@@ -1,6 +1,5 @@
 #pragma
 
-#include "watchme/var.h"
 #include "watchme/window_timers_map.h"
 
 #include <memory>
@@ -9,6 +8,7 @@
 
 namespace watch_me
 {
+struct Var;
 class WindowImpl;
 class Window
 {
