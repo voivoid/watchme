@@ -30,9 +30,9 @@ void add( Window& window, const T& var, const char* const var_name )
   window.add_var( std::make_unique<watch_me::NumericVar<T>>( var_name, &var ) );
 }
 
-void add( Window& window, const void* var, const char* const var_name )
+void add( Window& window, const void* var, const char* const var_name, const char* const type_name )
 {
-  window.add_var( std::make_unique<watch_me::PtrVar>( var_name, var ) );
+  window.add_var( std::make_unique<watch_me::PtrVar>( var_name, var, type_name ) );
 }
 
 }  // namespace
@@ -40,27 +40,24 @@ void add( Window& window, const void* var, const char* const var_name )
 template <typename T>
 Watcher::Watcher( const T& var, const char* const var_name ) : var_ptr( static_cast<const void*>( &var ) )
 {
-  init( var, var_name );
+  create_window();
+
+  assert( window );
+  add( *window, var, var_name );
 }
 
-Watcher::Watcher( const void* var, const char* const var_name )
+Watcher::Watcher( const void* var, const char* const var_name, const char* const type_name )
 {
-  init( var, var_name );
+  create_window();
+
+  assert( window );
+  add( *window, var, var_name, type_name );
 }
 
 Watcher::~Watcher()
 {
   assert( window );
   window->remove_var( var_ptr );
-}
-
-template <typename T>
-void Watcher::init( const T& var, const char* const var_name )
-{
-  create_window();
-
-  assert( window );
-  add( *window, var, var_name );
 }
 
 void Watcher::create_window()
