@@ -1,6 +1,6 @@
 #include "watchme/watchme.h"
 
-#include "watchme/intvar.h"
+#include "watchme/numvar.h"
 #include "watchme/strvar.h"
 #include "watchme/window.h"
 
@@ -23,10 +23,10 @@ void add( Window& window, const std::string& var, const char* const var_name )
   window.add_var( std::make_unique<watch_me::StringVar>( var_name, &var ) );
 }
 
-template <typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
+template <typename T, std::enable_if_t<std::is_integral_v<T> || std::is_floating_point_v<T>>* = nullptr>
 void add( Window& window, const T& var, const char* const var_name )
 {
-  window.add_var( std::make_unique<watch_me::IntegerVar<T>>( var_name, &var ) );
+  window.add_var( std::make_unique<watch_me::NumericVar<T>>( var_name, &var ) );
 }
 
 }  // namespace
@@ -70,6 +70,9 @@ DEFINE_TYPE( long );
 DEFINE_TYPE( unsigned long );
 DEFINE_TYPE( long long );
 DEFINE_TYPE( unsigned long long );
+DEFINE_TYPE( float );
+DEFINE_TYPE( double );
+DEFINE_TYPE( long double );
 DEFINE_TYPE( std::string );
 
 }  // namespace watch_me
