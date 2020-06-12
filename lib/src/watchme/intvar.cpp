@@ -24,21 +24,40 @@ constexpr size_t count_digits()
   return digits + sign;
 }
 
+template <typename T>
+const char* const type_name;
+
+#define DEFINE_TYPE( type )                                                                                                                \
+  template <>                                                                                                                              \
+  const char* const type_name<type> = #type;                                                                                               \
+  template watch_me::IntegerVar<type>
+
+DEFINE_TYPE( short );
+DEFINE_TYPE( unsigned short );
+DEFINE_TYPE( int );
+DEFINE_TYPE( unsigned int );
+DEFINE_TYPE( long );
+DEFINE_TYPE( unsigned long );
+DEFINE_TYPE( long long );
+DEFINE_TYPE( unsigned long long );
+
 
 }  // namespace
 
 namespace watch_me
 {
-IntVar::IntVar( const char* const name, const int* const ptr ) : Var( name, static_cast<const void*>( ptr ) ), int_ptr( ptr )
+template <typename T>
+IntegerVar<T>::IntegerVar( const char* const name, const T* const ptr ) : Var( name, ptr ), var_ptr( ptr )
 {
 }
 
-void IntVar::draw_frame_impl()
+template <typename T>
+void IntegerVar<T>::draw_frame_impl()
 {
-  char buff[ count_digits<int>() + 1 ];
-  *std::to_chars( std::begin( buff ), std::end( buff ) - 1, *int_ptr ).ptr = '\0';
+  char buff[ count_digits<T>() + 1 ];
+  *std::to_chars( std::begin( buff ), std::end( buff ) - 1, *var_ptr ).ptr = '\0';
 
-  ImGui::InputText( "int", buff, std::size( buff ) );
+  ImGui::InputText( type_name<T>, buff, std::size( buff ) );
 }
 
 }  // namespace watch_me

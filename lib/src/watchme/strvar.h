@@ -2,18 +2,19 @@
 
 #include "watchme/var.h"
 
+#include <string>
+
 namespace watch_me
 {
 
-template <typename T>
-struct IntegerVar : Var
+struct StringVar : Var
 {
-  IntegerVar( const char* name, const T* ptr );
+  StringVar( const char* name, const std::string* ptr );
 
   virtual void draw_frame_impl() override;
 
 private:
-  const T* const var_ptr;
+  const std::string* const var_ptr;
 };
 
 }  // namespace watch_me

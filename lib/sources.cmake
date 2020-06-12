@@ -7,4 +7,6 @@ set(SOURCES inc/watchme/watchme.h
             src/watchme/window.cpp
             src/watchme/intvar.h
             src/watchme/intvar.cpp
+            src/watchme/strvar.h
+            src/watchme/strvar.cpp
             src/watchme/var.cpp)

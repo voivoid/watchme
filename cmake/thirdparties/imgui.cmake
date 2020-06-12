@@ -20,6 +20,7 @@ if(NOT get_imgui_POPULATED)
                        ${SrcDir}/imstb_rectpack.h
                        ${SrcDir}/imstb_textedit.h
                        ${SrcDir}/imstb_truetype.h)
+  add_library(ImGui::Lib ALIAS ImGuiLib)
 
   target_include_directories(ImGuiLib PUBLIC ${SrcDir})
 
@@ -28,6 +29,8 @@ if(NOT get_imgui_POPULATED)
                                  ${SrcDir}/examples/imgui_impl_win32.cpp
                                  ${SrcDir}/examples/imgui_impl_dx9.h
                                  ${SrcDir}/examples/imgui_impl_dx9.cpp)
+    add_library(ImGui::Platform ALIAS ImGuiLibPlatform)
+
     target_link_libraries(ImGuiLibPlatform PUBLIC ImGuiLib d3d9.lib)
     target_include_directories(ImGuiLibPlatform PUBLIC ${SrcDir}/examples)
   else()

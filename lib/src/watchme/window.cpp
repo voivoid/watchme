@@ -63,9 +63,7 @@ void Window::add_var( std::unique_ptr<Var> var )
   assert( var );
 
   // std::function is copyable so std::unique_ptr can't be captured since it's move-only
-  post_gui_task( [ this, v = var.get() ] {
-    vars.emplace( v->ptr_addr, std::unique_ptr<Var>( v ) );
-  } );
+  post_gui_task( [ this, v = var.get() ] { vars.emplace( v->ptr_addr, std::unique_ptr<Var>( v ) ); } );
 
   var.release();
 }
