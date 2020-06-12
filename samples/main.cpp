@@ -9,11 +9,13 @@ int main()
   long long y     = 0;
   double d        = 0.0;
   std::string str = "hello";
+  int* ptr        = &x;
 
   WATCH_ME( x );
   WATCH_ME( y );
   WATCH_ME( d );
   WATCH_ME( str );
+  WATCH_ME( ptr );
 
   for ( size_t i = 0; i < 10; ++i )
   {
