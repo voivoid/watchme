@@ -6,9 +6,9 @@ namespace watch_me
 {
 
 template <typename T>
-struct IntegerVar : Var
+struct NumericVar : Var
 {
-  IntegerVar( const char* name, const T* ptr );
+  NumericVar( const char* name, const T* ptr );
 
   virtual void draw_frame_impl() override;
 
