@@ -4,7 +4,8 @@ namespace watch_me
 {
 struct Var
 {
-  Var( const char* n, const void* addr ) : name( n ), ptr_addr( addr )
+  template <typename T>
+  Var( const char* n, const T* addr ) : name( n ), ptr_addr( static_cast<const void*>( addr ) )
   {
   }
 

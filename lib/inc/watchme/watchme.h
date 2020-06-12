@@ -8,15 +8,14 @@
 
 namespace watch_me
 {
+class Var;
 class Window;
 class Watcher
 {
 
 public:
-  Watcher( const int& var, const char* const var_name ) : var_ptr( &var )
-  {
-    add_window( var_ptr, var_name );
-  }
+  template <typename T>
+  Watcher( const T& var, const char* const var_name );
 
   ~Watcher();
 
@@ -26,11 +25,10 @@ public:
   }
 
 private:
-  void add_window( const int* var_ptr, const char* var_name );
-  void remove_window();
+  void create_window();
 
 private:
-  const int* var_ptr;
+  const void* var_ptr;
   std::shared_ptr<Window> window;
 };
 }  // namespace watch_me
