@@ -24,13 +24,14 @@ Window::Window() : timer( 0 )
 
 Window::~Window()
 {
-  auto* pimpl = impl.release();
-  send_gui_task( [ this, pimpl ]() {
+  send_gui_task( [ this ]() {
     assert_this_is_gui_thread();
+    impl->stop_timer( timer );
+  } );
 
-    pimpl->stop_timer( this->timer );
-
-    delete pimpl;
+  send_gui_task( [ this ]() {
+    assert_this_is_gui_thread();
+    impl.reset();
     ImGui::DestroyContext();
   } );
 }

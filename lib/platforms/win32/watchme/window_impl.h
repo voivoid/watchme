@@ -1,7 +1,7 @@
 #pragma once
 
-#include <chrono>
 #include "watchme/window_timers_map.h"
+#include <chrono>
 
 #include <atlbase.h>
 #include <atlwin.h>
@@ -9,50 +9,50 @@
 
 namespace watch_me
 {
-	class WindowImpl : public ATL::CWindowImpl<WindowImpl, ATL::CWindow, ATL::CFrameWinTraits>
-	{
-	public:
-		DECLARE_WND_CLASS_EX(L"WatchMe Wnd Class", CS_CLASSDC, (HBRUSH)(COLOR_WINDOW + 1))
-		WindowImpl();
-		~WindowImpl();
+class WindowImpl : public ATL::CWindowImpl<WindowImpl, ATL::CWindow, ATL::CFrameWinTraits>
+{
+public:
+  DECLARE_WND_CLASS_EX( L"WatchMe Wnd Class", CS_CLASSDC, ( HBRUSH )( COLOR_WINDOW + 1 ) )
+  WindowImpl();
+  ~WindowImpl();
 
-		using TimersFunc = WindowTimersMap::TimersFunc;
-		using TimerHandle = WindowTimersMap::TimerHandle;
-		TimerHandle start_timer( std::chrono::milliseconds interval, TimersFunc on_timer );
-		void stop_timer(TimerHandle handle);
-		
+  using TimersFunc  = WindowTimersMap::TimersFunc;
+  using TimerHandle = WindowTimersMap::TimerHandle;
+  TimerHandle start_timer( std::chrono::milliseconds interval, TimersFunc on_timer );
+  void stop_timer( TimerHandle handle );
 
-		void start_frame();
-		void stop_frame();
 
-	private:
-		void init_d3d();
-		void init_imgui();
+  void start_frame();
+  void stop_frame();
 
-		void stop_d3d();
-		void stop_imgui();
+private:
+  void init_d3d();
+  void init_imgui();
 
-		void reset_device();
+  void stop_d3d();
+  void stop_imgui();
 
-	private:
-		struct ImGuiMsgHandler
-		{
-			BOOL ProcessWindowMessage(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam, LRESULT& result, DWORD msg_map = 0);
-		};
+  void reset_device();
 
-		BEGIN_MSG_MAP(WindowImpl)
-			MESSAGE_HANDLER( WM_SIZE, OnWmSize )
-			CHAIN_MSG_MAP_MEMBER( imgui_msg_handler )
-			CHAIN_MSG_MAP_MEMBER( timers_map )
-		END_MSG_MAP()
+private:
+  struct ImGuiMsgHandler
+  {
+    BOOL ProcessWindowMessage( HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam, LRESULT& result, DWORD msg_map = 0 );
+  };
 
-		LRESULT OnWmSize(UINT msg, WPARAM wParam, LPARAM lParam, BOOL& handled);
+  BEGIN_MSG_MAP( WindowImpl )
+  MESSAGE_HANDLER( WM_SIZE, OnWmSize )
+  CHAIN_MSG_MAP_MEMBER( imgui_msg_handler )
+  CHAIN_MSG_MAP_MEMBER( timers_map )
+  END_MSG_MAP()
 
-	private:
-		LPDIRECT3DDEVICE9 d3d_device = nullptr;
-		D3DPRESENT_PARAMETERS d3d_pp;
+  LRESULT OnWmSize( UINT msg, WPARAM wParam, LPARAM lParam, BOOL& handled );
 
-		WindowTimersMap timers_map;
-		ImGuiMsgHandler imgui_msg_handler;
-	};
-}
+private:
+  LPDIRECT3DDEVICE9 d3d_device = nullptr;
+  D3DPRESENT_PARAMETERS d3d_pp;
+
+  WindowTimersMap timers_map;
+  ImGuiMsgHandler imgui_msg_handler;
+};
+}  // namespace watch_me
