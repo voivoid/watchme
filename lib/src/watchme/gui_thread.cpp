@@ -13,7 +13,9 @@ namespace
 {
 std::once_flag g_gui_thread_once_flag;
 std::thread g_gui_thread;
-std::queue<watch_me::GuiTask> g_gui_tasks;
+
+using GuiTask = std::packaged_task<void()>;
+std::queue<GuiTask> g_gui_tasks;
 std::mutex g_gui_tasks_mutex;
 
 struct gui_thread_stopper
@@ -35,7 +37,7 @@ void process_gui_tasks()
   std::unique_lock<std::mutex> lock( g_gui_tasks_mutex );
   while ( !g_gui_tasks.empty() )
   {
-    const auto task = std::move( g_gui_tasks.front() );
+    auto task = std::move( g_gui_tasks.front() );
     g_gui_tasks.pop();
 
     lock.unlock();
@@ -59,38 +61,33 @@ void notify_gui_thread_to_process_tasks()
   watch_me::process_tasks_queue( g_gui_thread.native_handle(), &process_gui_tasks );
 }
 
-}  // namespace
-
-namespace watch_me
-{
-void send_gui_task( GuiTask task )
+auto post_task( GuiTask task )
 {
   std::call_once( g_gui_thread_once_flag, &start_gui_thread );
 
-  std::promise<void> task_promise;
-  auto task_future = task_promise.get_future();
-
-  {
-    std::lock_guard<std::mutex> lock( g_gui_tasks_mutex );
-    g_gui_tasks.push( [ &task_promise, task = std::move( task ) ]() {
-      task();
-      task_promise.set_value();
-    } );
-  }
-
-  notify_gui_thread_to_process_tasks();
-  task_future.wait();
-}
-
-void post_gui_task( GuiTask task )
-{
-  std::call_once( g_gui_thread_once_flag, &start_gui_thread );
+  auto future = task.get_future();
 
   {
     std::lock_guard<std::mutex> lock( g_gui_tasks_mutex );
     g_gui_tasks.push( std::move( task ) );
   }
+
   notify_gui_thread_to_process_tasks();
+  return future;
+}
+
+}  // namespace
+
+namespace watch_me
+{
+void send_gui_task( std::function<void()> task )
+{
+  post_task( GuiTask{ std::move( task ) } ).wait();
+}
+
+void post_gui_task( std::function<void()> task )
+{
+  post_task( GuiTask{ std::move( task ) } );
 }
 
 void assert_this_is_gui_thread()
